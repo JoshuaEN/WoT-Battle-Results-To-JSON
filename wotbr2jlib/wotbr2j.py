@@ -57,6 +57,7 @@ def usage():
     print 'Options:'
     print '-f Formats the JSON to be more human readable'
     print '-s Server Mode, disable writing of timestamp, enable logging'
+    print '-d Enable Debug Output'
 
 
 def main():
@@ -83,6 +84,9 @@ def main():
             option_server = 1
             logger = logging.getLogger()
             logger.addHandler(logging.FileHandler(filename='wotbr2jlib.log'))
+        elif argument == "-d":
+            logger = logging.getLogger()
+            logger.setLevel(logging.DEBUG)
 
     filename_source = str(sys.argv[1])
 
