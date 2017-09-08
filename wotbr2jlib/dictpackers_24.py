@@ -1,6 +1,8 @@
 # Embedded file name: scripts/common/DictPackers.py
 import copy
 # from debug_utils import *
+import logging
+import traceback
 from binascii import crc32
 
 def roundToInt(val):
@@ -103,9 +105,16 @@ class DictPacker(object):
         if (len(dataList) == 0):
             return
         elif dataList[0] != self._checksum:
-            import traceback
-            traceback.print_stack()
-            raise Exception('Expected checksum of ' + str(self._checksum) + ' but got ' + str(dataList[0]))
+            if logging.getLogger().isEnabledFor(logging.DEBUG):
+                logging.debug('Expected checksum of ' + str(self._checksum) + ' not ' + str(dataList[0]))
+                try:
+                    # Get a stack trace so it's easy to find which checksum is failing
+                    raise Exception()
+                except Exception as e:
+                    # Only the location of the call to this method is needed to determine which checksum is failing
+                    key_trace = traceback.extract_stack(limit=2)[0]
+                    logging.debug('\tat "' + key_trace[0] + '", line ' + str(key_trace[1]) + ', in ' + key_trace[2])
+
             return
         else:
             for index, meta in enumerate(self._metaData):
